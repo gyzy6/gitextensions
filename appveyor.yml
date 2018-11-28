@@ -124,9 +124,12 @@ for:
       $msi = (Resolve-Path GitExtensions-*.msi)[0].Path;
       $zip = (Resolve-Path GitExtensions-Portable-*.zip)[0].Path;
       # archive files so we send them all in one go
-      Compress-Archive -LiteralPath $msi, $zip -CompressionLevel NoCompression -DestinationPath .\combined.zip -Force
+      $combined = .\combined.$env:APPVEYOR_BUILD_VERSION.zip
+      $combinedSigned = .\combined.$env:APPVEYOR_BUILD_VERSION.signed.zip
+      Compress-Archive -LiteralPath $msi, $zip -CompressionLevel NoCompression -DestinationPath $combined -Force
       Submit-SigningRequest `
-          -InputArtifactPath .\combined.zip `
+          -InputArtifactPath $combined `
+          -Description "https://ci.appveyor.com/project/gitextensions/gitextensions/builds/" + APPVEYOR_BUILD_ID + "\n" + APPVEYOR_REPO_COMMIT_MESSAGE + "\n" + APPVEYOR_REPO_BRANCH " from " + APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH `
           -CIUserToken $env:spciuser `
           -OrganizationId '7c19b2cf-90f7-4d15-9b12-1b615f7c18c4' `
           -SigningPolicyId '8efd636e-c408-4406-a14a-1d481f6163bf' `
@@ -134,10 +137,10 @@ for:
           -WaitForCompletionTimeoutInSeconds 180 `
           -Force
       # extract signed artifacts to Signed folder
-      if (($LastExitCode -ne 0) -or !(Test-Path .\combined.signed.zip)) {
+      if (($LastExitCode -ne 0) -or !(Test-Path $combinedSigned)) {
           $host.SetShouldExit(-1)
       }
-      Expand-Archive  -LiteralPath .\combined.signed.zip -DestinationPath .\Signed
+      Expand-Archive  -LiteralPath $combinedSigned -DestinationPath .\Signed
       # -------------------------------
       # publish artifacts
       # -------------------------------

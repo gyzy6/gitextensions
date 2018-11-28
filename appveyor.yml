@@ -130,7 +130,9 @@ for:
           -CIUserToken $env:spciuser `
           -OrganizationId '7c19b2cf-90f7-4d15-9b12-1b615f7c18c4' `
           -SigningPolicyId '8efd636e-c408-4406-a14a-1d481f6163bf' `
-          -WaitForCompletionTimeoutInSeconds 180
+          -WaitForCompletion `
+          -WaitForCompletionTimeoutInSeconds 180 `
+          -Force
       dir
       # extract signed artifacts to Signed folder
       if (($LastExitCode -ne 0) -or !(Test-Path .\combined.signed.zip)) {

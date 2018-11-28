@@ -133,6 +133,9 @@ for:
           -OutputArtifactPath .\combined-signed.zip `
           -WaitForCompletionTimeoutInSeconds 180
       # extract signed artifacts to Signed folder
+      if (($LastExitCode -ne 0) -or !(Test-Path .\combined-signed.zip)) {
+          $host.SetShouldExit(-1)
+      }
       Expand-Archive  -LiteralPath .\combined-signed.zip -DestinationPath .\Signed
       # -------------------------------
       # publish artifacts

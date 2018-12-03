@@ -37,6 +37,10 @@ install:
 build_script:
 - ps: |
     Write-Output "Platform: $env:IdeVersion"
+    # --
+    gci env:APPVEYOR* | sort-object name
+    exit -1
+    # --
     & Setup\Build.cmd
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 
